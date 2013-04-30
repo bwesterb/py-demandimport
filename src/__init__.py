@@ -1,6 +1,7 @@
 # demandimport.py - global demand-loading of modules for Mercurial
 #
 # Copyright 2006, 2007 Matt Mackall <mpm@selenic.com>
+#                 2013 Bas Westerbaan <bas@westerbaan.name>
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -30,6 +31,7 @@ _origimport = __import__
 class _demandmod(object):
     """module demand-loader and proxy"""
     def __init__(self, name, globals, locals):
+        global _ignore
         if '.' in name:
             head, rest = name.split('.', 1)
             after = [rest]
@@ -38,13 +40,17 @@ class _demandmod(object):
             after = []
         object.__setattr__(self, "_data", (head, globals, locals, after))
         object.__setattr__(self, "_module", None)
+        object.__setattr__(self, "_ignore", set(_ignore))
     def _extend(self, name):
         """add to the list of submodules to load"""
         self._data[3].append(name)
     def _load(self):
         if not self._module:
+            global _ignore
             head, globals, locals, after = self._data
+            old_ignore, _ignore = _ignore, self._ignore
             mod = _origimport(head, globals, locals)
+            _ignore = old_ignore
             # load submodules
             def subload(mod, p):
                 h, t = p, None
@@ -70,7 +76,7 @@ class _demandmod(object):
     def __call__(self, *args, **kwargs):
         raise TypeError("%s object is not callable" % repr(self))
     def __getattribute__(self, attr):
-        if attr in ('_data', '_extend', '_load', '_module'):
+        if attr in ('_data', '_extend', '_load', '_module', '_ignore'):
             return object.__getattribute__(self, attr)
         self._load()
         return getattr(self._module, attr)
@@ -79,7 +85,7 @@ class _demandmod(object):
         setattr(self._module, attr, val)
 
 def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
-    if not locals or name in ignore or fromlist == ('*',):
+    if not locals or name in _ignore or fromlist == ('*',):
         # these cases we can't really delay
         if level == -1:
             return _origimport(name, globals, locals, fromlist)
@@ -118,7 +124,7 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
                 setattr(mod, x, _demandmod(x, mod.__dict__, locals))
         return mod
 
-ignore = [
+_ignore = set([
     '_hashlib',
     '_xmlplus',
     'fcntl',
@@ -137,12 +143,57 @@ ignore = [
     # raise ImportError if x not defined
     '__main__',
     '_ssl', # conditional imports in the stdlib, issue1964
-    ]
+    ])
+
+is_enabled = False
+
+def ignore(module_name):
+    global _ignore
+    _ignore.add(module_name)
+
+class ignored(object):
+    def __init__(self, module_name):
+        self.module_name = module_name
+    def __enter__(self):
+        global _ignore
+        self.added = self.module_name not in _ignore
+        if self.added:
+            _ignore.add(self.module_name)
+    def __exit__(self, *args):
+        global _ignore
+        if self.added:
+            _ignore.remove(self.module_name)
 
 def enable():
     "enable global demand-loading of modules"
-    __builtin__.__import__ = _demandimport
+    global is_enabled
+    if not is_enabled:
+        __builtin__.__import__ = _demandimport
+        is_enabled = True
 
 def disable():
     "disable global demand-loading of modules"
-    __builtin__.__import__ = _origimport
+    global is_enabled
+    if is_enabled:
+        __builtin__.__import__ = _origimport
+        is_enabled = False
+
+class disabled(object):
+    def __enter__(self):
+        global is_enabled
+        self.old = is_enabled
+        if is_enabled:
+            disable()
+    def __exit__(self, *args):
+        if self.old:
+            enable()
+
+class enabled(object):
+    def __enter__(self):
+        global is_enabled
+        self.old = is_enabled
+        if not is_enabled:
+            enable()
+    def __exit__(self, *args):
+        if not self.old:
+            disable()
