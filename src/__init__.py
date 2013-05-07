@@ -122,6 +122,15 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
             # set requested submodules for demand load
             if not hasattr(mod, x):
                 setattr(mod, x, _demandmod(x, mod.__dict__, locals))
+                # This ensures
+                #
+                #    with demandimport.ignored('a.b.c'):
+                #        from a.b import c
+                #
+                # behaves as expected.
+                # TODO we should skip the `_demandmod'.
+                if name + '.' + x in _ignore:
+                    getattr(mod, x)._load()
         return mod
 
 _ignore = set([
