@@ -2,12 +2,14 @@
 
 import sys
 from setuptools import setup
-from get_git_version import get_git_version
 
 setup(
     name='demandimport',
-    version=get_git_version(),
+    version='0.2.2dev0',
     description='On-demand imports, taken from mercurial',
+    long_description="{0:s}\n{0:s}". format(
+                    open('README.rst').read(),
+                    open('CHANGES.rst').read()),
     author='Bas Westerbaan',
     author_email='bas@westerbaan.name',
     url='http://github.com/bwesterb/py-demandimport/',

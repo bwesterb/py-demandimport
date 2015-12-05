@@ -1,5 +1,5 @@
 demandimport
-============
+************
 
 Delays module imports until used.  Taken from Mercurial.
 
