@@ -2,7 +2,7 @@
 *.pyc
 *.swp
 /*.egg-info
+/.eggs
 /build
 /dist
-MANIFEST
-RELEASE-VERSION
+/MANIFEST
