@@ -7,7 +7,7 @@ setup(
     name='demandimport',
     version='0.2.2dev0',
     description='On-demand imports, taken from mercurial',
-    long_description="{0:s}\n{0:s}". format(
+    long_description="{0:s}\n{1:s}". format(
                     open('README.rst').read(),
                     open('CHANGES.rst').read()),
     author='Bas Westerbaan',
