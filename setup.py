@@ -18,5 +18,16 @@ setup(
     test_suite='demandimport.tests',
     license='GPL 2.0',
     install_requires=['six >=1.2', # TODO do we need this version?
-                            ]
+                            ],
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Software Development :: Libraries',
+            ]
     ),
