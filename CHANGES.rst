@@ -1,6 +1,12 @@
 py-demandimport Changelog
 *************************
 
+0.2.3 (unreleased)
+==================
+
+- Nothing changed yet.
+
+
 0.2.2 (2015-12-05)
 ==================
 
