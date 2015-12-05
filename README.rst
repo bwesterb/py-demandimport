@@ -34,6 +34,13 @@ There are also versions that can be used with ``with``::
       with demandimport.ignored('test'):
          import other.troublemaker
 
+Installation
+============
+
+To install ``demandimport``, simply run::
+
+   pip install demandimport
+
 Attribution
 ===========
 
