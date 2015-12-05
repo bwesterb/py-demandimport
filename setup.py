@@ -17,4 +17,6 @@ setup(
     package_dir={'demandimport': 'src'},
     test_suite='demandimport.tests',
     license='GPL 2.0',
+    install_requires=['six >=1.2', # TODO do we need this version?
+                            ]
     ),

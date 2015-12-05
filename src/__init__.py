@@ -25,7 +25,7 @@ These imports will not be delayed:
   b = __import__(a)
 '''
 
-import __builtin__
+from six.moves import builtins
 _origimport = __import__
 
 class _demandmod(object):
@@ -177,14 +177,14 @@ def enable():
     "enable global demand-loading of modules"
     global is_enabled
     if not is_enabled:
-        __builtin__.__import__ = _demandimport
+        builtins.__import__ = _demandimport
         is_enabled = True
 
 def disable():
     "disable global demand-loading of modules"
     global is_enabled
     if is_enabled:
-        __builtin__.__import__ = _origimport
+        builtins.__import__ = _origimport
         is_enabled = False
 
 class disabled(object):

@@ -6,3 +6,4 @@ py-demandimport Changelog
 
 - Moved to zest.releaser
 - Add some basic unittests
+- Python 3 support
