@@ -27,6 +27,7 @@ These imports will not be delayed:
 
 from six.moves import builtins
 _origimport = __import__
+import pprint
 import imp
 
 class _demandmod(object):
@@ -49,6 +50,13 @@ class _demandmod(object):
         if not self._module:
             global _ignore
             head, globals, locals, after = self._data
+            if _log:
+                if after:
+                    _log('Triggered to import %s and setup lazy submodules %s '+
+                            'for %s', head, after, globals.get('__name__', '?'))
+                else:
+                    _log('Triggered to import %s for %s', head,
+                                    globals.get('__name__', '?'))
             old_ignore, _ignore = _ignore, self._ignore
             mod = _origimport(head, globals, locals)
             _ignore = old_ignore
@@ -58,6 +66,9 @@ class _demandmod(object):
                 if '.' in p:
                     h, t = p.split('.', 1)
                 if not hasattr(mod, h):
+                    if _log:
+                        _log('Delaying import of %s for %s as %s situation #4',
+                                p, mod.__dict__.get('__name__', '?'), h)
                     setattr(mod, h, _demandmod(p, mod.__dict__, mod.__dict__))
                 elif t:
                     subload(getattr(mod, h), t)
@@ -113,6 +124,9 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
             # So lets do that.
             if level == 0: # abs. import
                 imp.find_module(name)
+        if _log:
+            _log('Delaying import of %s for %s (level %s) situation #1', name,
+                            globals.get('__name__', '?'), level)
         return _demandmod(name, globals, locals)
     else:
         if level != -1:
@@ -123,11 +137,17 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
         # recurse down the module chain
         for comp in name.split('.')[1:]:
             if not hasattr(mod, comp):
+                if _log:
+                    _log('Delaying import of %s for %s situation #2',
+                            comp, mods.get('__name__', '?'))
                 setattr(mod, comp, _demandmod(comp, mod.__dict__, mod.__dict__))
             mod = getattr(mod, comp)
         for x in fromlist:
             # set requested submodules for demand load
             if not hasattr(mod, x):
+                if _log:
+                    _log('Delaying import of %s for %s situation #3', x,
+                                    mod.__dict__.get('__name__', '?'))
                 setattr(mod, x, _demandmod(x, mod.__dict__, locals))
                 # This ensures
                 #
@@ -162,6 +182,7 @@ _ignore = set([
     ])
 
 is_enabled = False
+_log = None
 
 def ignore(module_name):
     global _ignore
@@ -213,3 +234,10 @@ class enabled(object):
     def __exit__(self, *args):
         if not self.old:
             disable()
+
+def set_logfunc(logfunc):
+    """ Sets a logger to which demandimport will report all of its actions.
+
+        Useful to debug problems with third-party modules. """
+    global _log
+    _log = logfunc

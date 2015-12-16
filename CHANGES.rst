@@ -5,6 +5,7 @@ py-demandimport Changelog
 ==================
 
 - Do not delay ImportError in a special case.
+- Add optional logging (for debugging)
 
 
 0.2.2 (2015-12-05)
