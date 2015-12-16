@@ -27,6 +27,7 @@ These imports will not be delayed:
 
 from six.moves import builtins
 _origimport = __import__
+import imp
 
 class _demandmod(object):
     """module demand-loader and proxy"""
@@ -106,6 +107,12 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
                 if isinstance(locals[base], _demandmod):
                     locals[base]._extend(rest)
                 return locals[base]
+        else: # '.' not in name
+            # For an absolute import of an unnested module, we can check
+            # whether the module exists without loading anything.
+            # So lets do that.
+            if level == 0: # abs. import
+                imp.find_module(name)
         return _demandmod(name, globals, locals)
     else:
         if level != -1:
