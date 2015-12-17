@@ -32,7 +32,7 @@ import imp
 
 class _demandmod(object):
     """module demand-loader and proxy"""
-    def __init__(self, name, globals, locals):
+    def __init__(self, name, globals, locals, level=-1):
         global _ignore
         if '.' in name:
             head, rest = name.split('.', 1)
@@ -40,7 +40,7 @@ class _demandmod(object):
         else:
             head = name
             after = []
-        object.__setattr__(self, "_data", (head, globals, locals, after))
+        object.__setattr__(self, "_data", (head, globals, locals, after, level))
         object.__setattr__(self, "_module", None)
         object.__setattr__(self, "_ignore", set(_ignore))
     def _extend(self, name):
@@ -49,7 +49,7 @@ class _demandmod(object):
     def _load(self):
         if not self._module:
             global _ignore
-            head, globals, locals, after = self._data
+            head, globals, locals, after, level = self._data
             if _log:
                 if after:
                     _log('Triggered to import %s and setup lazy submodules %s '+
@@ -58,7 +58,10 @@ class _demandmod(object):
                     _log('Triggered to import %s for %s', head,
                                     globals.get('__name__', '?'))
             old_ignore, _ignore = _ignore, self._ignore
-            mod = _origimport(head, globals, locals)
+            if level == -1:
+                mod = _origimport(head, globals, locals)
+            else:
+                mod = _origimport(head, globals, locals, level)
             _ignore = old_ignore
             # load submodules
             def subload(mod, p):
