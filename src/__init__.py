@@ -132,7 +132,7 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
         if _log:
             _log('Delaying import of %s for %s (level %s) situation #1', name,
                             globals.get('__name__', '?'), level)
-        return _demandmod(name, globals, locals)
+        return _demandmod(name, globals, locals, level)
     else:
         if level != -1:
             # from . import b,c,d or from .a import b,c,d
