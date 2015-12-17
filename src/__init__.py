@@ -166,6 +166,7 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
         return mod
 
 _ignore = set([
+    '__future__',
     '_hashlib',
     '_xmlplus',
     'fcntl',
