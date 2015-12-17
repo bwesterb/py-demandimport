@@ -13,9 +13,9 @@ class TestModule(object):
         self.tempdir = tempfile.mkdtemp()
         self.name = 'testmodule{0}'.format(random.randint(0,2**128))
         sys.path.append(self.tempdir)
-        moduledir = os.path.join(self.tempdir, self.name)
-        os.mkdir(moduledir)
-        with open(os.path.join(moduledir, '__init__.py'), 'w') as f:
+        self.path = os.path.join(self.tempdir, self.name)
+        os.mkdir(self.path)
+        with open(os.path.join(self.path, '__init__.py'), 'w') as f:
             f.write(textwrap.dedent('''
                         import demandimport.tests
                         name = {}
