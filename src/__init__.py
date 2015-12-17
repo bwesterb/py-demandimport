@@ -116,6 +116,8 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
             # if a is already demand-loaded, add b to its submodule list
             if base in locals:
                 if isinstance(locals[base], _demandmod):
+                    if _log:
+                        _log('Adding %s to submodule list of %s', rest, base)
                     locals[base]._extend(rest)
                 return locals[base]
         else: # '.' not in name
