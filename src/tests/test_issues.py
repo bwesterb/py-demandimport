@@ -21,4 +21,7 @@ class TestIssues(unittest.TestCase):
                 __import__(m.name+'.a', locals={'foo': 'bar'}).a.__name__
 
 if __name__ == '__main__':
+    def log(msg, *args):
+        print(msg % args)
+    demandimport.set_logfunc(log)
     unittest.main()
