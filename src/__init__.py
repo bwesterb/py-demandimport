@@ -53,10 +53,11 @@ class _demandmod(object):
             if _log:
                 if after:
                     _log('Triggered to import %s and setup lazy submodules %s '+
-                            'for %s', head, after, globals.get('__name__', '?'))
+                            'for %s', head, after,  globals.get('__name__', '?')
+                                    if globals else '?')
                 else:
                     _log('Triggered to import %s for %s', head,
-                                    globals.get('__name__', '?'))
+                            globals.get('__name__', '?') if globals else '?')
             old_ignore, _ignore = _ignore, self._ignore
             if level == -1:
                 mod = _origimport(head, globals, locals)
@@ -111,7 +112,7 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
         if '.' in name: # a.b
             base, rest = name.split('.', 1)
             # email.__init__ loading email.mime
-            if globals and globals.get('__name__', None) == base:
+            if globals and globals.get('__name__') == base:
                 if level != -1:
                     return _origimport(name, globals, locals, fromlist, level)
                 else:
@@ -131,7 +132,8 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
                 imp.find_module(name)
         if _log:
             _log('Delaying import of %s for %s (level %s) situation #1', name,
-                            globals.get('__name__', '?'), level)
+                            globals.get('__name__', '?') if globals else '?',
+                            level)
         return _demandmod(name, globals, locals, level)
     else:
         if level != -1:
