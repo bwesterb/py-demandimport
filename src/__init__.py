@@ -27,7 +27,6 @@ These imports will not be delayed:
 
 from six.moves import builtins
 _origimport = __import__
-import pprint
 import imp
 
 class _demandmod(object):
