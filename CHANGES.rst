@@ -6,6 +6,8 @@ py-demandimport Changelog
 
 - Do not delay ImportError in a special case.
 - Add optional logging (for debugging)
+- Fixed issue #1: ``import a.b`` in a module ``a.c`` was incorrectly executed
+  as a relative ``import c``.
 
 
 0.2.2 (2015-12-05)

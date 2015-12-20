@@ -32,7 +32,7 @@ import imp
 
 class _demandmod(object):
     """module demand-loader and proxy"""
-    def __init__(self, name, globals, locals, level=-1):
+    def __init__(self, name, globals, locals, level=-1, parent_path=None):
         global _ignore
         if '.' in name:
             head, rest = name.split('.', 1)
@@ -40,7 +40,8 @@ class _demandmod(object):
         else:
             head = name
             after = []
-        object.__setattr__(self, "_data", (head, globals, locals, after, level))
+        object.__setattr__(self, "_data", (head, globals, locals, after, level,
+                                                    parent_path))
         object.__setattr__(self, "_module", None)
         object.__setattr__(self, "_ignore", set(_ignore))
     def _extend(self, name):
@@ -49,23 +50,32 @@ class _demandmod(object):
     def _load(self):
         if not self._module:
             global _ignore
-            head, globals, locals, after, level = self._data
+            head, globals, locals, after, level, parent_path = self._data
+            old_ignore, _ignore = _ignore, self._ignore
+            path = parent_path + '.' + head if parent_path else head
+            set_head_on_locals = False
             if _log:
                 if after:
                     _log('Triggered to import %s and setup lazy submodules %s '+
-                            'for %s', head, after,  globals.get('__name__', '?')
+                            'for %s', path, after,  globals.get('__name__', '?')
                                     if globals else '?')
                 else:
-                    _log('Triggered to import %s for %s', head,
+                    _log('Triggered to import %s for %s', path,
                             globals.get('__name__', '?') if globals else '?')
-            old_ignore, _ignore = _ignore, self._ignore
+            if locals and locals.get(head) is self:
+                del locals[head]
+                set_head_on_locals = True
             if level == -1:
-                mod = _origimport(head, globals, locals)
+                mod = _origimport(path, globals, locals)
             else:
-                mod = _origimport(head, globals, locals, level)
+                mod = _origimport(path, globals, locals, level)
+            if parent_path:
+                for bit in path.split('.')[1:]:
+                    mod = getattr(mod, bit)
+            assert not isinstance(mod, _demandmod)
             _ignore = old_ignore
             # load submodules
-            def subload(mod, p):
+            def subload(mod, modp, p):
                 h, t = p, None
                 if '.' in p:
                     h, t = p.split('.', 1)
@@ -73,15 +83,16 @@ class _demandmod(object):
                     if _log:
                         _log('Delaying import of %s for %s as %s situation #4',
                                 p, mod.__dict__.get('__name__', '?'), h)
-                    setattr(mod, h, _demandmod(p, mod.__dict__, mod.__dict__))
+                    setattr(mod, h, _demandmod(p, mod.__dict__, mod.__dict__,
+                                            parent_path=modp))
                 elif t:
-                    subload(getattr(mod, h), t)
+                    subload(getattr(mod, h), modp+'.'+h, t)
 
             for x in after:
-                subload(mod, x)
+                subload(mod, head, x)
 
             # are we in the locals dictionary still?
-            if locals and locals.get(head) == self:
+            if (locals and locals.get(head) is self) or set_head_on_locals:
                 locals[head] = mod
             object.__setattr__(self, "_module", mod)
 
