@@ -146,7 +146,7 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
             if not hasattr(mod, comp):
                 if _log:
                     _log('Delaying import of %s for %s situation #2',
-                            comp, mods.get('__name__', '?'))
+                            comp, mod.__dict__.get('__name__', '?'))
                 setattr(mod, comp, _demandmod(comp, mod.__dict__, mod.__dict__))
             mod = getattr(mod, comp)
         for x in fromlist:
