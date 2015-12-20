@@ -25,9 +25,14 @@ These imports will not be delayed:
   b = __import__(a)
 '''
 
-from six.moves import builtins
-_origimport = __import__
+try:
+    import __builtin__ as builtins
+except ImportError:
+    import builtins
+
 import imp
+
+_origimport = __import__
 
 class _demandmod(object):
     """module demand-loader and proxy"""
