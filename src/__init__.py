@@ -57,7 +57,6 @@ class _demandmod(object):
             head, globals, locals, after, level, parent_path = self._data
             old_ignore, _ignore = _ignore, self._ignore
             path = parent_path + '.' + head if parent_path else head
-            set_head_on_locals = False
             if _log:
                 if after:
                     _log('Triggered to import %s and setup lazy submodules %s '+
@@ -66,16 +65,16 @@ class _demandmod(object):
                 else:
                     _log('Triggered to import %s for %s', path,
                             globals.get('__name__', '?') if globals else '?')
-            if locals and locals.get(head) is self:
-                del locals[head]
-                set_head_on_locals = True
+            # If we are given a parent_path, we will ask __import__ to
+            # import parent.path.head.  By default it returns the loaded
+            # module `parent'.  However, we are interested in `head'.
+            # By passing a barely-non-trivial fromlist, __import__ returns
+            # the right-most module instead of the left-most.
+            fromlist = ['__name__'] if parent_path else []
             if level == -1:
-                mod = _origimport(path, globals, locals)
+                mod = _origimport(path, globals, locals, fromlist)
             else:
-                mod = _origimport(path, globals, locals, level)
-            if parent_path:
-                for bit in path.split('.')[1:]:
-                    mod = getattr(mod, bit)
+                mod = _origimport(path, globals, locals, fromlist, level)
             assert not isinstance(mod, _demandmod)
             _ignore = old_ignore
             # load submodules
@@ -96,8 +95,9 @@ class _demandmod(object):
                 subload(mod, head, x)
 
             # are we in the locals dictionary still?
-            if (locals and locals.get(head) is self) or set_head_on_locals:
+            if locals and locals.get(head) is self:
                 locals[head] = mod
+
             object.__setattr__(self, "_module", mod)
 
     def __repr__(self):
