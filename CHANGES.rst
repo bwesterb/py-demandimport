@@ -8,6 +8,7 @@ py-demandimport Changelog
 - Add optional logging (for debugging)
 - Fixed issue #1: ``import a.b`` in a module ``a.c`` was incorrectly executed
   as a relative ``import c``.
+- Improve thread safety
 
 
 0.2.2 (2015-12-05)
