@@ -1,7 +1,7 @@
 py-demandimport Changelog
 *************************
 
-0.2.3 (unreleased)
+0.3.0 (2015-12-21)
 ==================
 
 - Do not delay ImportError in a special case.
