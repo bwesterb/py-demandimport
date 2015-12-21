@@ -4,7 +4,7 @@ py-demandimport Changelog
 0.3.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Relicense GPL version 2 or later (GPLv2+)
 
 
 0.3.0 (2015-12-21)

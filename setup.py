@@ -16,11 +16,11 @@ setup(
     packages=['demandimport', 'demandimport.tests'],
     package_dir={'demandimport': 'src'},
     test_suite='demandimport.tests',
-    license='GPL 2.0',
+    license='GPLv2+',
     install_requires=[],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
