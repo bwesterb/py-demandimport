@@ -96,7 +96,7 @@ class _demandmod(object):
                     subload(getattr(mod, h), modp+'.'+h, t)
 
             for x in after:
-                subload(mod, head, x)
+                subload(mod, path, x)
 
             # are we in the locals dictionary still?
             if locals and locals.get(head) is self:

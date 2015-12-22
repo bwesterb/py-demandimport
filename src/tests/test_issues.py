@@ -20,6 +20,16 @@ class TestIssues(unittest.TestCase):
                     pass
                 __import__(m.name+'.a', locals={'foo': 'bar'}).a.__name__
 
+    def test_issue2(self):
+        with TestModule() as m:
+            with demandimport.enabled():
+                os.mkdir(os.path.join(m.path, 'a'))
+                with open(os.path.join(m.path, 'a', '__init__.py'), 'w') as f:
+                    pass
+                with open(os.path.join(m.path, 'a', 'b.py'), 'w') as f:
+                    pass
+                __import__(m.name+'.a.b', locals={'foo': 'bar'}).a.b.__name__
+
 if __name__ == '__main__':
     def log(msg, *args):
         print(msg % args)
