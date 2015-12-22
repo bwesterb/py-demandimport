@@ -1,7 +1,7 @@
 py-demandimport Changelog
 *************************
 
-0.3.2 (unreleased)
+0.3.2 (2015-12-22)
 ==================
 
 - Fixed issue #2: ``import a.b.c`` will incorrectly try to import ``b.c``
