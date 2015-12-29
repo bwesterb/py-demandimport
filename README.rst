@@ -5,27 +5,37 @@ Delays loading of modules until they are actually used.  Perfect for Python
 apps that need to be snappy like command-line utils.  Source-code derived
 from mercurial.
 
-To enable, write::
+To enable, write
+
+.. code:: python
 
    import demandimport; demandimport.enable()
 
-Imports of the following form will be delayed::
+Imports of the following form will be delayed
+
+.. code:: python
 
    import a, b.c
    import a.b as c
    from a import b, c # a will be loaded immediately, though
 
-These imports with not be delay::
+These imports with not be delay
+
+.. code:: python
 
    from a import *
    b = __import__(a)
 
 Delayed loading will confuse some third-party modules.  In that case you
-can disable the delay for just that module.  For example::
+can disable the delay for just that module.  For example
+
+.. code:: python
 
    demandimport.ignore('Crypto.PublicKey._fastmath')
 
-There are also versions that can be used with ``with``::
+There are also versions that can be used with ``with``
+
+.. code:: python
 
    with demandimport.enabled():
       # do something
