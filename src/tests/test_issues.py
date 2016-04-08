@@ -1,6 +1,7 @@
 import unittest
 import textwrap
 import os.path
+import sys
 
 import demandimport
 from demandimport.tests import TestModule
@@ -29,6 +30,20 @@ class TestIssues(unittest.TestCase):
                 with open(os.path.join(m.path, 'a', 'b.py'), 'w') as f:
                     pass
                 __import__(m.name+'.a.b', locals={'foo': 'bar'}).a.b.__name__
+
+    def test_issue3(self):
+        if sys.version_info[0] >= 3:
+            return
+        with TestModule() as m:
+            with demandimport.enabled():
+                os.mkdir(os.path.join(m.path, 'a'))
+                with open(os.path.join(m.path, 'a', '__init__.py'), 'w') as f:
+                    pass
+                with open(os.path.join(m.path, 'a', 'b.py'), 'w') as f:
+                    pass
+                with open(os.path.join(m.path, 'a', 'c.py'), 'w') as f:
+                    f.write("from b import *")
+                __import__(m.name+'.a.c', locals={'foo': 'bar'}).a.c.__name__
 
 if __name__ == '__main__':
     def log(msg, *args):
