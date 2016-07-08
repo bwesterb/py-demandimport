@@ -19,7 +19,7 @@ Imports of the following form will be delayed
    import a.b as c
    from a import b, c # a will be loaded immediately, though
 
-These imports with not be delay
+These imports with not be delayed
 
 .. code:: python
 
