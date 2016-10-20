@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='demandimport',
-    version='0.3.3',
+    version='0.3.4.dev0',
     description='On-demand imports, taken from mercurial',
     long_description="{0:s}\n{1:s}". format(
                     open('README.rst').read(),
