@@ -73,15 +73,22 @@ class TestCore(unittest.TestCase):
                     lm = __import__(m.name, locals={'foo': 'bar'})
                     self.assertTrue(m.loaded)
 
-    def test_is_demand_module(self):
+    def test_is_proxy_and_loaded(self):
         with TestModule() as m:
             lm = __import__(m.name)
-            self.assertFalse(demandimport.is_demand_module(lm))
-
+            self.assertFalse(demandimport.is_proxy(lm))
+            self.assertTrue(m.loaded)
+            self.assertTrue(demandimport.is_loaded(lm))
         with TestModule() as m:
-            lm = demandimport._demandimport(m.name, locals=['lm'])
-            self.assertTrue(demandimport.is_demand_module(lm))
-
+            with demandimport.enabled():
+                lm = __import__(m.name, locals={'foo': 'bar'})
+                self.assertTrue(demandimport.is_proxy(lm))
+                self.assertFalse(demandimport.is_loaded(lm))
+                self.assertFalse(m.loaded)
+                self.assertEqual(lm.name, m.name)
+                self.assertTrue(demandimport.is_loaded(lm))
+                self.assertTrue(m.loaded)
+                self.assertTrue(demandimport.is_proxy(lm))
 
 if __name__ == '__main__':
     unittest.main()

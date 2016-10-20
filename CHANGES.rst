@@ -4,7 +4,8 @@ py-demandimport Changelog
 0.3.3 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add ``is_loaded`` and ``is_proxy``.
+  Thanks-to: github.com/poke1024
 
 
 0.3.2 (2015-12-22)

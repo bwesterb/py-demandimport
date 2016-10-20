@@ -267,8 +267,18 @@ class enabled(object):
         if not self.old:
             disable()
 
-def is_demand_module(module):
+def is_proxy(module):
+    """ Checks whether the given module is a demandimport proxy object. """
     return isinstance(module, _demandmod)
+
+def is_loaded(module):
+    """ Checks whether the given module has been loaded.
+
+        Note that the object might still be a proxy object.  Check this case
+        with the `is_proxy` function. """
+    if not is_proxy(module):
+        return True
+    return bool(module._module)
 
 def set_logfunc(logfunc):
     """ Sets a logger to which demandimport will report all of its actions.
