@@ -267,6 +267,9 @@ class enabled(object):
         if not self.old:
             disable()
 
+def is_demand_module(module):
+    return isinstance(module, _demandmod)
+
 def set_logfunc(logfunc):
     """ Sets a logger to which demandimport will report all of its actions.
 

@@ -73,5 +73,15 @@ class TestCore(unittest.TestCase):
                     lm = __import__(m.name, locals={'foo': 'bar'})
                     self.assertTrue(m.loaded)
 
+    def test_is_demand_module(self):
+        with TestModule() as m:
+            lm = __import__(m.name)
+            self.assertFalse(demandimport.is_demand_module(lm))
+
+        with TestModule() as m:
+            lm = demandimport._demandimport(m.name, locals=['lm'])
+            self.assertTrue(demandimport.is_demand_module(lm))
+
+
 if __name__ == '__main__':
     unittest.main()
