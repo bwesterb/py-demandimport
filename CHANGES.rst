@@ -1,7 +1,7 @@
 py-demandimport Changelog
 *************************
 
-0.3.3 (unreleased)
+0.3.3 (2016-10-20)
 ==================
 
 - Add ``is_loaded`` and ``is_proxy``.
