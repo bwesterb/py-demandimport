@@ -76,7 +76,7 @@ class _demandmod(object):
             # the right-most module instead of the left-most.
             fromlist = ['__name__'] if parent_path else []
             if level == -1:
-                mod = _origimport(path, globals, locals, fromlist)
+                mod = _origimport(path, globals, locals, fromlist, 0)
             else:
                 mod = _origimport(path, globals, locals, fromlist, level)
             assert not isinstance(mod, _demandmod)
@@ -125,7 +125,7 @@ def _demandimport(name, globals=None, locals=None, fromlist=None, level=-1):
         if not locals or name in _ignore or fromlist == ('*',):
             # these cases we can't really delay
             if level == -1:
-                return _origimport(name, globals, locals, fromlist)
+                return _origimport(name, globals, locals, fromlist, 0)
             else:
                 return _origimport(name, globals, locals, fromlist, level)
         elif not fromlist:

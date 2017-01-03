@@ -8,6 +8,46 @@ from demandimport.tests import TestModule
 
 # Test-cases for bugs we encountered
 
+import_hook = """
+import sys
+import importlib
+
+class _LibImp(object):
+    our_children = '{}.'.format(__package__)
+    lib_module = '{}.lib'.format(__package__)
+    lib_children = '{}.lib.'.format(__package__)
+
+    @staticmethod
+    def should_load(name):
+        return name.startswith(_LibImp.our_children) and not (
+            name == _LibImp.lib_module
+            or name.startswith(_LibImp.lib_children)
+        )
+
+    def find_module(self, name, path=None):
+        if self.should_load(name):
+            return self
+        return None
+
+    def load_module(self, name):
+        if name not in sys.modules:
+            other_name = name
+            if self.should_load(name):
+                name = name.replace(
+                    __package__,
+                    '{}.lib'.format(__package__),
+                    1)
+            try:
+                sys.modules[other_name] = importlib.import_module(name)
+            except ImportError as e:
+                raise ImportError(
+                    'received request for {} but Unable to import {}: {}'
+                    .format(other_name, name, e))
+        return sys.modules[name]
+
+sys.meta_path.append(_LibImp())
+"""
+
 class TestIssues(unittest.TestCase):
     def test_issue1(self):
         with TestModule() as m:
@@ -44,6 +84,25 @@ class TestIssues(unittest.TestCase):
                 with open(os.path.join(m.path, 'a', 'c.py'), 'w') as f:
                     f.write("from b import *")
                 __import__(m.name+'.a.c', locals={'foo': 'bar'}).a.c.__name__
+
+    def test_issue3_hook(self):
+        with TestModule() as m:
+            with open(os.path.join(m.path, '__init__.py'), 'a') as f:
+                f.write(import_hook)
+            os.mkdir(os.path.join(m.path, 'lib'))
+            open(os.path.join(m.path, 'lib', '__init__.py'), 'w').close()
+            open(os.path.join(m.path, 'lib', 'b.py'), 'w').close()
+            with open(os.path.join(m.path, 'lib', 'c.py'), 'w') as f:
+                f.write("import {}.b".format(m.name))
+            __import__(m.name).__name__
+            with demandimport.enabled():
+                __import__(m.name+'.c',
+                           locals={'foo': 'bar'},
+                           level=0).c.__name__
+                __import__(m.name+'.lib.c',
+                           locals={'foo': 'bar'},
+                           level=0).lib.c.__name__
+
 
 if __name__ == '__main__':
     def log(msg, *args):
