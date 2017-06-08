@@ -1,7 +1,7 @@
 py-demandimport Changelog
 *************************
 
-0.3.4 (unreleased)
+0.3.4 (2017-06-08)
 ==================
 
 - Python 3.6
