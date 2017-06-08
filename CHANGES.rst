@@ -5,6 +5,7 @@ py-demandimport Changelog
 ==================
 
 - Python 3.6
+- Add sip to the default ignore list.  #6
 
 
 0.3.3 (2016-10-20)
