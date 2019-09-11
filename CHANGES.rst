@@ -4,7 +4,7 @@ py-demandimport Changelog
 0.3.5 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add collections.abc to default ignore list.
 
 
 0.3.4 (2017-06-08)

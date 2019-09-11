@@ -208,6 +208,7 @@ _ignore = set([
     # this trips up many extension authors
     'gtk',
     'sip',
+    'collections.abc',
     # setuptools' pkg_resources.py expects "from __main__ import x" to
     # raise ImportError if x not defined
     '__main__',
