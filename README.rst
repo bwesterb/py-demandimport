@@ -54,6 +54,6 @@ To install ``demandimport``, simply run::
 Attribution
 ===========
 
-Matt Mackall <mpm@selenic.com> is the original author of the module in
+Olivia Mackall <olivia@selenic.com> is the original author of the module in
 Mercurial on which this module is based.  Bas Westerbaan <bas@westerbaan.name>
 maintains it now.

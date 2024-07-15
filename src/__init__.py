@@ -1,6 +1,6 @@
 # demandimport.py - global demand-loading of modules for Mercurial
 #
-# Copyright 2006, 2007 Matt Mackall <mpm@selenic.com>
+# Copyright 2006, 2007 Olivia Mackall <olivia@selenic.com>
 #           2013, 2015 Bas Westerbaan <bas@westerbaan.name>
 #
 # This software may be used and distributed according to the terms of the
